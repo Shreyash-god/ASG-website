@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASG Studios & ASG Group — Shreyash Ghosh</title>
+<meta name="description" content="ASG Studios: Cinematography, Games, Production. ASG Group: Space, AI, Aerospace, Quantum Computing & beyond.">
+<meta property="og:title" content="ASG Studios & ASG Group">
+<meta property="og:description" content="Beyond the Stars. Beyond the Possible.">
+<meta property="og:image" content="/images/asg-logo.png">
+<link rel="icon" type="image/png" href="/images/asg-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<style>
+/* ══════════════════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════════════════ */
+:root {
+  --gold:    #c9a84c;
+  --gold2:   #f0d070;
+  --gold3:   #8b6914;
+  --silver:  #b0bec5;
+  --chrome:  #e0e0e0;
+  --bg:      #000000;
+  --bg2:     #04040a;
+  --bg3:     #080810;
+  --bg4:     #0c0c18;
+  --accent:  #00e5ff;
+  --accent2: #7c4dff;
+  --red:     #ff4757;
+  --green:   #2ed573;
+  --text:    #e8e8f0;
+  --text2:   #7a7a96;
+  --border:  rgba(201,168,76,0.2);
+  --border2: rgba(0,229,255,0.15);
+  --glow:    0 0 30px rgba(201,168,76,0.35);
+  --glow2:   0 0 30px rgba(0,229,255,0.35);
+  --font-d:  'Orbitron', monospace;
+  --font-b:  'Rajdhani', sans-serif;
+  --font-m:  'Share Tech Mono', monospace;
+  --ease:    cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ══════════════════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════════════════ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-b);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: none;
+}
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+button { font-family: var(--font-b); cursor: pointer; }
+
+/* ══════════════════════════════════════════════════
+   CUSTOM CURSOR
+══════════════════════════════════════════════════ */
+#cur-dot {
+  position: fixed; width: 8px; height: 8px;
+  background: var(--gold); border-radius: 50%;
+  pointer-events: none; z-index: 99999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s;
+  mix-blend-mode: difference;
+}
+#cur-ring {
+  position: fixed; width: 40px; height: 40px;
+  border: 1px solid rgba(201,168,76,0.5); border-radius: 50%;
+  pointer-events: none; z-index: 99998;
+  transform: translate(-50%,-50%);
+  transition: width 0.4s var(--ease), height 0.4s var(--ease),
+              border-color 0.3s, transform 0.15s;
+}
+.cursor-hover #cur-ring { width: 60px; height: 60px; border-color: var(--accent); }
+.cursor-active #cur-dot { transform: translate(-50%,-50%) scale(0.5); }
+
+/* ══════════════════════════════════════════════════
+   PARTICLES CANVAS
+══════════════════════════════════════════════════ */
+#pcanvas {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0;
+}
+
+/* ══════════════════════════════════════════════════
+   SCROLL PROGRESS
+══════════════════════════════════════════════════ */
+#scroll-bar {
+  position: fixed; top: 0; left: 0;
+  height: 2px; background: linear-gradient(90deg, var(--gold3), var(--gold), var(--gold2));
+  z-index: 9999; width: 0%;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 8px var(--gold);
+}
+
+/* ══════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════ */
+nav#main-nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 1000;
+  height: 68px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  background: rgba(0,0,0,0);
+  border-bottom: 1px solid transparent;
+  transition: background 0.4s, border-color 0.4s, backdrop-filter 0.4s;
+}
+nav#main-nav.scrolled {
+  background: rgba(0,0,0,0.88);
+  border-color: var(--border);
+  backdrop-filter: blur(20px) saturate(160%);
+}
+.nav-logo {
+  font-family: var(--font-d);
+  font-size: 20px; font-weight: 900; letter-spacing: 5px;
+  color: var(--gold); cursor: pointer;
+  display: flex; align-items: center; gap: 12px;
+}
+.nav-logo img { width: 36px; height: 36px; object-fit: contain; filter: brightness(1.2); }
+.nav-center {
+  display: flex; gap: 4px; align-items: center;
+}
+.nav-center a {
+  font-family: var(--font-b); font-size: 12px; font-weight: 600;
+  letter-spacing: 2.5px; text-transform: uppercase; color: var(--text2);
+  padding: 6px 16px; border-radius: 2px;
+  position: relative; overflow: hidden;
+  transition: color 0.3s;
+}
+.nav-center a::after {
+  content: ''; position: absolute; bottom: 0; left: 16px; right: 16px;
+  height: 1px; background: var(--gold);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.3s var(--ease);
+}
+.nav-center a:hover { color: var(--gold); }
+.nav-center a:hover::after { transform: scaleX(1); }
+.nav-right { display: flex; gap: 10px; align-items: center; }
+.nav-btn-login {
+  font-family: var(--font-d); font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--chrome);
+  border: 1px solid rgba(176,190,197,0.3); background: transparent;
+  padding: 8px 18px; transition: all 0.3s;
+}
+.nav-btn-login:hover { border-color: var(--chrome); color: var(--chrome); box-shadow: 0 0 15px rgba(176,190,197,0.15); }
+.nav-btn-main {
+  font-family: var(--font-d); font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; color: #000;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold3) 100%);
+  border: none; padding: 8px 20px;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  transition: all 0.3s;
+}
+.nav-btn-main:hover { box-shadow: var(--glow); transform: translateY(-1px); }
+.hamburger {
+  display: none; flex-direction: column; gap: 5px; background: none; border: none; padding: 4px;
+}
+.hamburger span { width: 24px; height: 1px; background: var(--chrome); transition: all 0.3s; display: block; }
+
+/* ══════════════════════════════════════════════════
+   MOBILE NAV DRAWER
+══════════════════════════════════════════════════ */
+#nav-drawer {
+  position: fixed; top: 0; right: -100%; bottom: 0;
+  width: 300px; background: var(--bg2); border-left: 1px solid var(--border);
+  z-index: 1001; padding: 80px 32px 40px;
+  transition: right 0.4s var(--ease);
+  display: flex; flex-direction: column; gap: 8px;
+}
+#nav-drawer.open { right: 0; }
+#nav-drawer a {
+  font-family: var(--font-b); font-size: 18px; font-weight: 600;
+  letter-spacing: 2px; color: var(--text2); padding: 12px 0;
+  border-bottom: 1px solid var(--border); transition: color 0.3s;
+}
+#nav-drawer a:hover { color: var(--gold); }
+#drawer-overlay { position: fixed; inset:0; background: rgba(0,0,0,0.6); z-index: 1000; display:none; }
+#drawer-overlay.show { display:block; }
+
+/* ══════════════════════════════════════════════════
+   HERO SECTION
+══════════════════════════════════════════════════ */
+#hero {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; overflow: hidden;
+  background: radial-gradient(ellipse at 50% -10%, #0a0a25 0%, var(--bg) 60%);
+  padding: 100px 40px 60px;
+  position: relative;
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  animation: grid-scroll 30s linear infinite;
+}
+.hero-vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, transparent 30%, var(--bg) 100%);
+}
+@keyframes grid-scroll { to { background-position: 64px 64px; } }
+.hero-scanlines {
+  position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px
+  );
+  opacity: 0.4;
+}
+.hero-content { position: relative; z-index: 2; max-width: 1000px; }
+.hero-status {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-m); font-size: 10px; letter-spacing: 4px;
+  color: var(--accent); text-transform: uppercase; margin-bottom: 24px;
+  opacity: 0; animation: fadeUp 1s 0.2s forwards;
+}
+.hero-status-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(0.6); } }
+.hero-founder {
+  font-family: var(--font-d); font-size: clamp(40px, 8vw, 100px);
+  font-weight: 900; letter-spacing: 8px; line-height: 0.95;
+  background: linear-gradient(140deg, var(--gold2) 0%, var(--gold) 45%, var(--gold3) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  opacity: 0; animation: fadeUp 1.2s 0.5s forwards;
+}
+.hero-presents {
+  font-family: var(--font-b); font-size: 12px; font-weight: 300;
+  letter-spacing: 12px; text-transform: uppercase; color: var(--text2);
+  margin-bottom: 48px;
+  opacity: 0; animation: fadeUp 1s 0.9s forwards;
+}
+.hero-brands {
+  display: flex; gap: 64px; justify-content: center; align-items: center;
+  flex-wrap: wrap; margin-bottom: 64px;
+  opacity: 0; animation: fadeUp 1s 1.2s forwards;
+}
+.brand-block { display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; }
+.brand-name {
+  font-family: var(--font-d); font-size: clamp(32px, 5vw, 56px);
+  font-weight: 900; letter-spacing: 10px;
+  background: linear-gradient(180deg, var(--chrome) 0%, var(--silver) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.4s var(--ease);
+  text-shadow: none;
+}
+.brand-block:hover .brand-name {
+  background: linear-gradient(135deg, var(--gold2) 0%, var(--gold) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 24px var(--gold));
+}
+.brand-tag {
+  font-family: var(--font-m); font-size: 9px; letter-spacing: 5px;
+  color: var(--text2); text-transform: uppercase;
+}
+.brand-divider { width: 1px; height: 90px; background: var(--border); }
+.hero-tagline {
+  font-family: var(--font-b); font-size: 17px; font-weight: 300;
+  letter-spacing: 2px; color: var(--text2); max-width: 640px;
+  margin: 0 auto 56px;
+  opacity: 0; animation: fadeUp 1s 1.6s forwards;
+}
+.hero-cta {
+  display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+  opacity: 0; animation: fadeUp 1s 2s forwards;
+}
+.scroll-hint {
+  position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  opacity: 0; animation: fadeIn 1s 3s forwards;
+}
+.scroll-hint span { font-family: var(--font-m); font-size: 9px; letter-spacing: 5px; color: var(--text2); }
+.scroll-line {
+  width: 1px; height: 44px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse { 0%,100% { opacity:1; transform:scaleY(1) translateY(0); } 50% { opacity:0.3; transform:scaleY(0.5) translateY(5px); } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(32px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+/* ══════════════════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════════════════ */
+.btn-gold {
+  font-family: var(--font-d); font-size: 10px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase; color: #000;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold3) 100%);
+  border: none; padding: 14px 40px;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  cursor: pointer; transition: all 0.3s; display: inline-block;
+}
+.btn-gold:hover { box-shadow: var(--glow); transform: translateY(-2px); }
+.btn-chrome {
+  font-family: var(--font-d); font-size: 10px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--chrome);
+  background: transparent; border: 1px solid rgba(224,224,224,0.25);
+  padding: 14px 40px;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  cursor: pointer; transition: all 0.3s; display: inline-block;
+}
+.btn-chrome:hover { border-color: var(--chrome); box-shadow: 0 0 20px rgba(224,224,224,0.1); transform: translateY(-2px); }
+.btn-cyan {
+  font-family: var(--font-d); font-size: 10px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase; color: #000;
+  background: linear-gradient(135deg, var(--accent) 0%, #0077aa 100%);
+  border: none; padding: 14px 40px;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  cursor: pointer; transition: all 0.3s; display: inline-block;
+}
+.btn-cyan:hover { box-shadow: var(--glow2); transform: translateY(-2px); }
+
+/* ══════════════════════════════════════════════════
+   SECTION UTILITIES
+══════════════════════════════════════════════════ */
+section { position: relative; z-index: 1; }
+.container { max-width: 1300px; margin: 0 auto; padding: 0 40px; }
+.sec-pad { padding: 120px 0; }
+.sec-head { text-align: center; margin-bottom: 80px; }
+.sec-tag {
+  font-family: var(--font-m); font-size: 10px; letter-spacing: 6px;
+  color: var(--accent); text-transform: uppercase; margin-bottom: 14px; display: block;
+}
+.sec-title {
+  font-family: var(--font-d); font-size: clamp(28px, 4vw, 52px);
+  font-weight: 900; letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--chrome) 0%, var(--silver) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 16px; line-height: 1.1;
+}
+.sec-sub { font-size: 15px; color: var(--text2); max-width: 580px; margin: 0 auto; }
+.sec-line { width: 60px; height: 1px; background: var(--gold); margin: 20px auto 0; }
+.reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ══════════════════════════════════════════════════
+   ASG STUDIOS SECTION
+══════════════════════════════════════════════════ */
+#studios { background: var(--bg2); }
+.studios-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1px;
+}
+.studio-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  padding: 44px 36px; position: relative; overflow: hidden;
+  transition: all 0.4s var(--ease); cursor: pointer;
+}
+.studio-card::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 2px; height: 0; background: var(--gold);
+  transition: height 0.5s var(--ease);
+}
+.studio-card::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 0% 0%, rgba(201,168,76,0.08) 0%, transparent 70%);
+  opacity: 0; transition: opacity 0.4s;
+}
+.studio-card:hover::before { height: 100%; }
+.studio-card:hover::after  { opacity: 1; }
+.studio-card:hover { transform: translateY(-4px); box-shadow: var(--glow); border-color: rgba(201,168,76,0.4); }
+.card-num { font-family: var(--font-m); font-size: 10px; letter-spacing: 4px; color: rgba(201,168,76,0.4); margin-bottom: 28px; }
+.card-ico { font-size: 44px; margin-bottom: 20px; display: block; }
+.card-title { font-family: var(--font-d); font-size: 18px; font-weight: 700; letter-spacing: 2px; color: var(--chrome); margin-bottom: 14px; }
+.card-body { font-size: 14px; color: var(--text2); line-height: 1.8; }
+.card-cta { display: inline-block; margin-top: 24px; font-family: var(--font-m); font-size: 9px; letter-spacing: 3px; color: var(--gold); border: 1px solid var(--border); padding: 6px 14px; text-transform: uppercase; transition: all 0.3s; }
+.card-cta:hover { background: rgba(201,168,76,0.1); border-color: var(--gold); }
+
+/* ══════════════════════════════════════════════════
+   ASG GROUP SECTION
+══════════════════════════════════════════════════ */
+#group {
+  background: radial-gradient(ellipse at 50% 100%, #050520 0%, var(--bg) 65%);
+}
+.group-header-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; margin-bottom: 100px; }
+.group-txt h3 { font-family: var(--font-m); font-size: 10px; letter-spacing: 5px; color: var(--accent); text-transform: uppercase; margin-bottom: 20px; }
+.group-txt p { font-size: 16px; color: var(--text2); line-height: 1.9; margin-bottom: 14px; }
+.group-domains { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+.domain-item {
+  background: var(--bg2); border: 1px solid var(--border2);
+  padding: 18px 22px; font-size: 13px; font-weight: 600; letter-spacing: 1px;
+  display: flex; align-items: center; gap: 12px;
+  transition: all 0.3s; cursor: pointer; color: var(--text);
+}
+.domain-item::before { content: '//'; font-family: var(--font-m); font-size: 11px; color: var(--accent); flex-shrink: 0; }
+.domain-item:hover { background: rgba(0,229,255,0.06); border-color: var(--accent); color: var(--accent); }
+.group-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2px; }
+.group-card {
+  background: var(--bg2); border: 1px solid var(--border2);
+  padding: 40px 32px; position: relative; overflow: hidden;
+  transition: all 0.4s; cursor: pointer;
+}
+.group-card::before {
+  content: ''; position: absolute; bottom: 0; left: 0;
+  height: 2px; width: 0; background: var(--accent);
+  transition: width 0.5s var(--ease);
+}
+.group-card:hover::before { width: 100%; }
+.group-card:hover { background: rgba(0,229,255,0.04); box-shadow: var(--glow2); border-color: rgba(0,229,255,0.35); }
+.group-card .ico { font-size: 48px; margin-bottom: 20px; display: block; }
+.group-card .ttl { font-family: var(--font-d); font-size: 16px; font-weight: 700; letter-spacing: 2px; color: var(--accent); margin-bottom: 12px; }
+.group-card .dsc { font-size: 13px; color: var(--text2); line-height: 1.8; }
+
+/* ══════════════════════════════════════════════════
+   BLOG / DOCS SECTION
+══════════════════════════════════════════════════ */
+#blog { background: var(--bg2); }
+.blog-filters { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px; }
+.filter-btn {
+  font-family: var(--font-m); font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--text2); background: var(--bg3); border: 1px solid var(--border);
+  padding: 8px 20px; cursor: pointer; transition: all 0.3s;
+}
+.filter-btn.active, .filter-btn:hover { color: var(--gold); border-color: var(--gold); background: rgba(201,168,76,0.06); }
+.blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2px; }
+.blog-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  overflow: hidden; position: relative; transition: all 0.4s; cursor: pointer;
+}
+.blog-card:hover { transform: translateY(-4px); box-shadow: var(--glow); border-color: rgba(201,168,76,0.4); }
+.blog-thumb {
+  height: 180px; background: linear-gradient(135deg, var(--bg4) 0%, #0a0a20 100%);
+  display: flex; align-items: center; justify-content: center; font-size: 56px;
+  position: relative; overflow: hidden;
+}
+.blog-thumb::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 50%, var(--bg3) 100%); }
+.blog-img { width: 100%; height: 100%; object-fit: cover; }
+.blog-body { padding: 28px; }
+.blog-cat { font-family: var(--font-m); font-size: 9px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; }
+.blog-title { font-family: var(--font-d); font-size: 17px; font-weight: 700; letter-spacing: 1px; color: var(--chrome); margin-bottom: 10px; line-height: 1.3; }
+.blog-exc { font-size: 13px; color: var(--text2); line-height: 1.7; }
+.blog-meta { display: flex; align-items: center; gap: 12px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+.blog-meta img { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); }
+.blog-meta .author { font-size: 12px; color: var(--text2); }
+.blog-meta .date { font-family: var(--font-m); font-size: 10px; color: var(--text2); margin-left: auto; }
+.blog-load { text-align: center; margin-top: 48px; }
+.blog-empty { text-align: center; padding: 80px 20px; color: var(--text2); font-family: var(--font-m); letter-spacing: 3px; font-size: 12px; }
+
+/* ══════════════════════════════════════════════════
+   SHOP SECTION
+══════════════════════════════════════════════════ */
+#shop { background: var(--bg); }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2px; }
+.prod-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  overflow: hidden; transition: all 0.4s; position: relative;
+}
+.prod-card:hover { transform: translateY(-4px); box-shadow: var(--glow); border-color: rgba(201,168,76,0.5); }
+.prod-thumb {
+  height: 260px; background: var(--bg3);
+  display: flex; align-items: center; justify-content: center; font-size: 64px;
+  overflow: hidden;
+}
+.prod-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.prod-body { padding: 24px; }
+.prod-cat { font-family: var(--font-m); font-size: 9px; letter-spacing: 4px; color: var(--text2); text-transform: uppercase; margin-bottom: 8px; }
+.prod-name { font-family: var(--font-d); font-size: 16px; font-weight: 700; letter-spacing: 1px; color: var(--chrome); margin-bottom: 8px; }
+.prod-desc { font-size: 12px; color: var(--text2); margin-bottom: 16px; line-height: 1.6; }
+.prod-foot { display: flex; align-items: center; justify-content: space-between; }
+.prod-price { font-family: var(--font-d); font-size: 20px; font-weight: 700; color: var(--gold); }
+.prod-btn {
+  font-family: var(--font-m); font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: #000; background: var(--gold); border: none; padding: 8px 18px;
+  cursor: pointer; transition: all 0.3s;
+}
+.prod-btn:hover { background: var(--gold2); box-shadow: var(--glow); }
+
+/* ══════════════════════════════════════════════════
+   DONATE SECTION
+══════════════════════════════════════════════════ */
+#donate {
+  background: radial-gradient(ellipse at 50% 50%, #0a0a1a 0%, var(--bg) 70%);
+}
+.donate-wrap { max-width: 700px; margin: 0 auto; }
+.donate-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  padding: 48px; position: relative; overflow: hidden;
+}
+.donate-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.amount-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
+.amount-btn {
+  font-family: var(--font-d); font-size: 13px; font-weight: 700;
+  color: var(--text2); background: var(--bg3); border: 1px solid var(--border);
+  padding: 14px; cursor: pointer; transition: all 0.3s;
+}
+.amount-btn.active, .amount-btn:hover { color: var(--gold); border-color: var(--gold); background: rgba(201,168,76,0.08); }
+.method-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 16px 0; }
+.method-btn {
+  font-family: var(--font-b); font-size: 13px; font-weight: 600;
+  color: var(--text2); background: var(--bg3); border: 1px solid var(--border);
+  padding: 14px; cursor: pointer; transition: all 0.3s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.method-btn.active, .method-btn:hover { color: var(--gold); border-color: var(--gold); background: rgba(201,168,76,0.08); }
+.form-field {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); padding: 14px 18px; font-family: var(--font-b); font-size: 15px;
+  outline: none; margin-bottom: 12px; transition: border-color 0.3s;
+}
+.form-field:focus { border-color: var(--gold); }
+.form-field::placeholder { color: var(--text2); }
+.form-label { font-family: var(--font-m); font-size: 9px; letter-spacing: 3px; color: var(--text2); text-transform: uppercase; margin-bottom: 8px; display: block; }
+.form-check { display: flex; align-items: center; gap: 10px; margin: 12px 0; cursor: pointer; }
+.form-check input[type=checkbox] { accent-color: var(--gold); width: 16px; height: 16px; }
+.form-check span { font-size: 13px; color: var(--text2); }
+.toast {
+  position: fixed; bottom: 32px; right: 32px;
+  background: var(--bg2); border: 1px solid var(--border);
+  padding: 16px 24px; font-family: var(--font-b); font-size: 14px;
+  z-index: 9000; transform: translateY(100px); opacity: 0;
+  transition: all 0.4s var(--ease); max-width: 360px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: var(--green); color: var(--green); }
+.toast.error   { border-color: var(--red);   color: var(--red);   }
+
+/* ══════════════════════════════════════════════════
+   AUTH MODAL
+══════════════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
+  z-index: 2000; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--bg2); border: 1px solid var(--border);
+  width: 100%; max-width: 460px; padding: 48px;
+  position: relative; transform: translateY(20px); transition: transform 0.4s var(--ease);
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; background: linear-gradient(90deg, var(--gold3), var(--gold), var(--gold3));
+}
+.modal-close {
+  position: absolute; top: 20px; right: 20px;
+  background: none; border: none; color: var(--text2); font-size: 22px;
+  cursor: pointer; transition: color 0.2s;
+}
+.modal-close:hover { color: var(--gold); }
+.modal h2 { font-family: var(--font-d); font-size: 20px; font-weight: 700; letter-spacing: 3px; color: var(--gold); margin-bottom: 32px; }
+.oauth-btns { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.oauth-btn {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); padding: 14px 20px; cursor: pointer;
+  font-family: var(--font-b); font-size: 14px; font-weight: 600;
+  transition: all 0.3s; text-decoration: none;
+}
+.oauth-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.06); }
+.oauth-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+.modal-divider {
+  display: flex; align-items: center; gap: 16px; margin: 20px 0;
+  color: var(--text2); font-family: var(--font-m); font-size: 9px; letter-spacing: 3px;
+}
+.modal-divider::before, .modal-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.modal-tabs { display: flex; gap: 0; margin-bottom: 28px; }
+.modal-tab {
+  flex: 1; font-family: var(--font-d); font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; padding: 12px;
+  background: var(--bg3); border: 1px solid var(--border); color: var(--text2);
+  cursor: pointer; transition: all 0.3s;
+}
+.modal-tab.active { background: rgba(201,168,76,0.1); border-color: var(--gold); color: var(--gold); }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+.field-wrap { margin-bottom: 16px; }
+.error-msg { font-family: var(--font-m); font-size: 11px; color: var(--red); margin-top: 12px; letter-spacing: 1px; }
+
+/* ══════════════════════════════════════════════════
+   CONTACT SECTION
+══════════════════════════════════════════════════ */
+#contact { background: var(--bg2); }
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+.contact-info h3 { font-family: var(--font-d); font-size: 14px; font-weight: 700; letter-spacing: 3px; color: var(--gold); margin-bottom: 24px; text-transform: uppercase; }
+.contact-info p { font-size: 15px; color: var(--text2); line-height: 1.9; margin-bottom: 32px; }
+.contact-links { display: flex; flex-direction: column; gap: 12px; }
+.contact-link { display: flex; align-items: center; gap: 14px; color: var(--text2); font-size: 14px; transition: color 0.3s; }
+.contact-link:hover { color: var(--gold); }
+.contact-link-ico { font-size: 18px; }
+.contact-form { display: flex; flex-direction: column; gap: 14px; }
+
+/* ══════════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════════ */
+footer {
+  background: var(--bg2); border-top: 1px solid var(--border);
+  padding: 80px 0 0;
+}
+.footer-top {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 60px; margin-bottom: 60px;
+}
+.footer-brand .logo { font-family: var(--font-d); font-size: 22px; font-weight: 900; letter-spacing: 6px; color: var(--gold); margin-bottom: 16px; }
+.footer-brand p { font-size: 13px; color: var(--text2); line-height: 1.8; max-width: 280px; margin-bottom: 24px; }
+.footer-col h4 { font-family: var(--font-d); font-size: 11px; font-weight: 700; letter-spacing: 3px; color: var(--chrome); text-transform: uppercase; margin-bottom: 20px; }
+.footer-col a { display: block; font-size: 13px; color: var(--text2); margin-bottom: 10px; transition: color 0.3s; }
+.footer-col a:hover { color: var(--gold); }
+.newsletter-form { display: flex; gap: 0; }
+.newsletter-input {
+  flex: 1; background: var(--bg3); border: 1px solid var(--border);
+  border-right: none; color: var(--text); padding: 10px 16px;
+  font-family: var(--font-b); font-size: 13px; outline: none;
+}
+.newsletter-input::placeholder { color: var(--text2); }
+.newsletter-btn {
+  background: var(--gold); color: #000; border: none;
+  padding: 10px 20px; font-family: var(--font-d); font-size: 9px;
+  font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+  transition: all 0.3s;
+}
+.newsletter-btn:hover { background: var(--gold2); }
+.footer-bottom {
+  border-top: 1px solid var(--border); padding: 28px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-copy { font-family: var(--font-m); font-size: 10px; letter-spacing: 2px; color: var(--text2); }
+.footer-copy strong { color: var(--gold); }
+.footer-legal { display: flex; gap: 24px; }
+.footer-legal a { font-family: var(--font-m); font-size: 10px; letter-spacing: 2px; color: var(--text2); transition: color 0.3s; }
+.footer-legal a:hover { color: var(--gold); }
+.footer-trademark { font-family: var(--font-m); font-size: 9px; letter-spacing: 1px; color: rgba(122,122,150,0.6); text-align: center; padding: 12px 40px 20px; }
+
+/* ══════════════════════════════════════════════════
+   CART DRAWER
+══════════════════════════════════════════════════ */
+#cart-drawer {
+  position: fixed; top: 0; right: -400px; bottom: 0;
+  width: 380px; background: var(--bg2); border-left: 1px solid var(--border);
+  z-index: 1500; padding: 28px; overflow-y: auto;
+  transition: right 0.4s var(--ease); display: flex; flex-direction: column;
+}
+#cart-drawer.open { right: 0; }
+.cart-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.cart-head h3 { font-family: var(--font-d); font-size: 14px; font-weight: 700; letter-spacing: 3px; color: var(--gold); }
+.cart-item { display: flex; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+.cart-item-img { width: 64px; height: 64px; background: var(--bg3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; overflow: hidden; }
+.cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
+.cart-item-info { flex: 1; }
+.cart-item-name { font-size: 13px; font-weight: 600; color: var(--chrome); margin-bottom: 4px; }
+.cart-item-price { font-family: var(--font-d); font-size: 13px; color: var(--gold); }
+.cart-item-qty { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.qty-btn { background: var(--bg3); border: 1px solid var(--border); color: var(--text); width: 24px; height: 24px; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+.qty-btn:hover { border-color: var(--gold); color: var(--gold); }
+.qty-num { font-family: var(--font-m); font-size: 13px; color: var(--text); min-width: 24px; text-align: center; }
+.cart-remove { background: none; border: none; color: var(--text2); cursor: pointer; font-size: 16px; transition: color 0.2s; }
+.cart-remove:hover { color: var(--red); }
+.cart-total { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border); }
+.cart-total-row { display: flex; justify-content: space-between; margin-bottom: 12px; }
+.cart-total-row .lbl { font-size: 13px; color: var(--text2); }
+.cart-total-row .val { font-family: var(--font-d); font-size: 15px; color: var(--gold); font-weight: 700; }
+.cart-empty { text-align: center; padding: 60px 0; color: var(--text2); font-family: var(--font-m); font-size: 11px; letter-spacing: 3px; }
+
+/* ══════════════════════════════════════════════════
+   POST MODAL (full blog reading)
+══════════════════════════════════════════════════ */
+#post-modal .modal { max-width: 840px; max-height: 90vh; overflow-y: auto; }
+.post-modal-cover { width: 100%; height: 280px; object-fit: cover; margin-bottom: 32px; }
+.post-modal-cat { font-family: var(--font-m); font-size: 9px; letter-spacing: 5px; color: var(--gold); text-transform: uppercase; margin-bottom: 12px; }
+.post-modal-title { font-family: var(--font-d); font-size: 28px; font-weight: 700; letter-spacing: 2px; color: var(--chrome); margin-bottom: 20px; line-height: 1.2; }
+.post-modal-body { font-size: 15px; color: var(--text2); line-height: 1.9; }
+.post-modal-body h1,.post-modal-body h2,.post-modal-body h3 { color: var(--chrome); font-family: var(--font-d); letter-spacing: 2px; margin: 28px 0 14px; }
+.post-modal-body p { margin-bottom: 16px; }
+.post-modal-body code { font-family: var(--font-m); background: var(--bg3); border: 1px solid var(--border); padding: 2px 8px; font-size: 13px; color: var(--accent); }
+.post-modal-body pre { background: var(--bg3); border: 1px solid var(--border); padding: 20px; overflow-x: auto; margin: 20px 0; border-left: 2px solid var(--gold); }
+.post-modal-body pre code { background: none; border: none; padding: 0; color: var(--text); }
+.post-modal-body blockquote { border-left: 2px solid var(--gold); padding-left: 20px; color: var(--text2); font-style: italic; margin: 20px 0; }
+
+/* ══════════════════════════════════════════════════
+   CHECKOUT MODAL
+══════════════════════════════════════════════════ */
+#checkout-modal .modal { max-width: 560px; }
+
+/* ══════════════════════════════════════════════════
+   SECTION: ABOUT / MISSIONS
+══════════════════════════════════════════════════ */
+#about { background: var(--bg); }
+.about-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.about-logo-side { display: flex; align-items: center; justify-content: center; }
+.about-logo-ring {
+  width: 320px; height: 320px; border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  animation: rotateSlow 20s linear infinite;
+}
+@keyframes rotateSlow { to { transform: rotate(360deg); } }
+.about-logo-ring::before {
+  content: ''; position: absolute; inset: 16px; border-radius: 50%;
+  border: 1px solid rgba(201,168,76,0.1);
+}
+.about-logo-ring img { width: 200px; height: 200px; object-fit: contain; animation: rotateSlow 20s linear infinite reverse; }
+.about-text .tagline { font-family: var(--font-m); font-size: 10px; letter-spacing: 5px; color: var(--accent); text-transform: uppercase; margin-bottom: 20px; }
+.about-text h2 { font-family: var(--font-d); font-size: clamp(24px, 3vw, 40px); font-weight: 900; letter-spacing: 3px; color: var(--chrome); margin-bottom: 20px; line-height: 1.2; }
+.about-text p { font-size: 15px; color: var(--text2); line-height: 1.9; margin-bottom: 14px; }
+.about-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+.stat-item { text-align: center; }
+.stat-val { font-family: var(--font-d); font-size: 32px; font-weight: 900; color: var(--gold); display: block; }
+.stat-lbl { font-family: var(--font-m); font-size: 9px; letter-spacing: 3px; color: var(--text2); text-transform: uppercase; }
+
+/* ══════════════════════════════════════════════════
+   MISC UI
+══════════════════════════════════════════════════ */
+.loading { display: flex; gap: 4px; align-items: center; justify-content: center; padding: 40px; }
+.loading span { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; animation: bounce 0.8s ease-in-out infinite; }
+.loading span:nth-child(2) { animation-delay: 0.15s; }
+.loading span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes bounce { 0%,100% { transform:translateY(0); opacity:0.4; } 50% { transform:translateY(-8px); opacity:1; } }
+.badge { display: inline-block; font-family: var(--font-m); font-size: 9px; letter-spacing: 2px; padding: 3px 10px; border-radius: 2px; text-transform: uppercase; }
+.badge-gold { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+.badge-blue { background: rgba(0,229,255,0.1); color: var(--accent); border: 1px solid rgba(0,229,255,0.25); }
+.input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .footer-top { grid-template-columns: 1fr 1fr; }
+  .group-header-wrap { grid-template-columns: 1fr; gap: 40px; }
+  .about-wrap { grid-template-columns: 1fr; gap: 48px; }
+  .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+}
+@media (max-width: 768px) {
+  .nav-center { display: none; }
+  .hamburger { display: flex; }
+  .hero-brands { gap: 32px; }
+  .brand-divider { height: 60px; }
+  .footer-top { grid-template-columns: 1fr; gap: 40px; }
+  .amount-grid { grid-template-columns: repeat(2, 1fr); }
+  .donate-card { padding: 32px 24px; }
+  .modal { padding: 36px 24px; }
+  .about-logo-ring { width: 220px; height: 220px; }
+  .about-logo-ring img { width: 140px; height: 140px; }
+  .about-stats { grid-template-columns: repeat(2, 1fr); }
+  nav#main-nav { padding: 0 24px; }
+  .container { padding: 0 24px; }
+  .input-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cur-dot"></div>
+<div id="cur-ring"></div>
+
+<!-- SCROLL PROGRESS -->
+<div id="scroll-bar"></div>
+
+<!-- PARTICLE CANVAS -->
+<canvas id="pcanvas"></canvas>
+
+<!-- DRAWER OVERLAY -->
+<div id="drawer-overlay" onclick="closeDrawer()"></div>
+
+<!-- ══ NAVIGATION ══════════════════════════════════════ -->
+<nav id="main-nav">
+  <a class="nav-logo" href="#hero">
+    <img src="/images/asg-logo.png" alt="ASG Logo" onerror="this.style.display='none'">
+    ASG
+  </a>
+  <div class="nav-center">
+    <a href="#about">About</a>
+    <a href="#studios">Studios</a>
+    <a href="#group">Group</a>
+    <a href="#blog">Content</a>
+    <a href="#shop">Shop</a>
+    <a href="#donate">Donate</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="nav-right">
+    <div id="nav-user-area">
+      <button class="nav-btn-login" onclick="openModal('auth-modal')">Login</button>
+      <button class="nav-btn-main" onclick="openModal('auth-modal')">Sign Up</button>
+    </div>
+    <button class="nav-btn-login" onclick="openCart()" style="position:relative" id="cart-toggle">
+      🛍 Cart <span id="cart-count" style="display:none;position:absolute;top:-6px;right:-6px;background:var(--gold);color:#000;border-radius:50%;width:18px;height:18px;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:700">0</span>
+    </button>
+    <button class="hamburger" onclick="openDrawer()" id="hamburger">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ══ MOBILE NAV DRAWER ═══════════════════════════════ -->
+<div id="nav-drawer">
+  <a href="#about"   onclick="closeDrawer()">About</a>
+  <a href="#studios" onclick="closeDrawer()">Studios</a>
+  <a href="#group"   onclick="closeDrawer()">ASG Group</a>
+  <a href="#blog"    onclick="closeDrawer()">Content</a>
+  <a href="#shop"    onclick="closeDrawer()">Shop</a>
+  <a href="#donate"  onclick="closeDrawer()">Donate</a>
+  <a href="#contact" onclick="closeDrawer()">Contact</a>
+  <button class="btn-gold" onclick="openModal('auth-modal');closeDrawer()" style="margin-top:20px">Login / Sign Up</button>
+</div>
+
+<!-- ══ HERO ════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-scanlines"></div>
+  <div class="hero-content">
+    <div class="hero-status">
+      <div class="hero-status-dot"></div>
+      SYSTEM ONLINE — ASGSTUDIOS.ONLINE
+    </div>
+    <h1 class="hero-founder">SHREYASH GHOSH</h1>
+    <div class="hero-presents">PRESENTS</div>
+    <div class="hero-brands">
+      <div class="brand-block" onclick="scrollTo('#studios')">
+        <div class="brand-name">ASG STUDIOS</div>
+        <div class="brand-tag">Cinematography · Games · Production</div>
+      </div>
+      <div class="brand-divider"></div>
+      <div class="brand-block" onclick="scrollTo('#group')">
+        <div class="brand-name">ASG GROUP</div>
+        <div class="brand-tag">Space · AI · Aerospace · Quantum</div>
+      </div>
+    </div>
+    <p class="hero-tagline">Beyond the Stars. Beyond the Possible. We build the future — from cinematic worlds to interstellar frontiers.</p>
+    <div class="hero-cta">
+      <button class="btn-gold" onclick="scrollTo('#studios')">Explore Studios</button>
+      <button class="btn-cyan" onclick="scrollTo('#group')">ASG Group</button>
+      <button class="btn-chrome" onclick="scrollTo('#about')">Our Mission</button>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>SCROLL</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ══ ABOUT ═══════════════════════════════════════════ -->
+<section id="about" class="sec-pad">
+  <div class="container">
+    <div class="about-wrap reveal">
+      <div class="about-logo-side">
+        <div class="about-logo-ring">
+          <img src="/images/asg-logo.png" alt="ASG Logo" onerror="this.outerHTML='<div style=\'font-family:var(--font-d);font-size:48px;font-weight:900;color:var(--gold);letter-spacing:4px\'>ASG</div>'">
+        </div>
+      </div>
+      <div class="about-text">
+        <div class="tagline">// WHO WE ARE</div>
+        <h2>Forging the Future from Imagination to Infinity</h2>
+        <p>ASG is the creative and technological force founded by <strong style="color:var(--gold)">Shreyash Ghosh</strong> — a visionary who refuses to accept limits. From the storytelling power of cinema and interactive worlds, to the engineering of spacecraft and artificial minds, ASG operates at the bleeding edge of human potential.</p>
+        <p>ASG Studios crafts immersive narratives. ASG Group engineers what comes next. Together, we are building an empire of innovation that spans every domain — from Hollywood to orbit.</p>
+        <div class="about-stats">
+          <div class="stat-item"><span class="stat-val" data-count="2">2</span><span class="stat-lbl">Companies</span></div>
+          <div class="stat-item"><span class="stat-val" data-count="15">15+</span><span class="stat-lbl">Domains</span></div>
+          <div class="stat-item"><span class="stat-val" data-count="1">∞</span><span class="stat-lbl">Vision</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ASG STUDIOS ══════════════════════════════════════ -->
+<section id="studios" class="sec-pad">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="sec-tag">// Creative Division</span>
+      <h2 class="sec-title">ASG STUDIOS</h2>
+      <p class="sec-sub">Where imagination becomes reality. We craft worlds through cinematography, interactive experiences, and premium production.</p>
+      <div class="sec-line"></div>
+    </div>
+    <div class="studios-grid reveal">
+      <div class="studio-card"><div class="card-num">01 / CINEMATOGRAPHY</div><span class="card-ico">🎬</span><div class="card-title">CINEMATOGRAPHY</div><div class="card-body">Visually arresting films and series crafted with master-class technique. Every frame tells a story that lingers long after the screen goes dark.</div><span class="card-cta">Learn More →</span></div>
+      <div class="studio-card"><div class="card-num">02 / GAMES</div><span class="card-ico">🎮</span><div class="card-title">GAME STUDIOS</div><div class="card-body">Immersive gaming experiences built on cutting-edge engines. We design worlds that captivate, challenge, and inspire millions of players worldwide.</div><span class="card-cta">Learn More →</span></div>
+      <div class="studio-card"><div class="card-num">03 / PRODUCTION</div><span class="card-ico">🎵</span><div class="card-title">MUSIC PRODUCTION</div><div class="card-body">Original scores, soundtracks, and music that transcends genre. Our production house shapes the sonic identity of next-generation media.</div><span class="card-cta">Learn More →</span></div>
+      <div class="studio-card"><div class="card-num">04 / VFX</div><span class="card-ico">✨</span><div class="card-title">VFX & ANIMATION</div><div class="card-body">Photorealistic visual effects and boundary-pushing animation. We make the impossible look inevitable — one frame at a time.</div><span class="card-cta">Learn More →</span></div>
+      <div class="studio-card"><div class="card-num">05 / STREAMING</div><span class="card-ico">📡</span><div class="card-title">STREAMING & OTT</div><div class="card-body">Original content distributed across platforms globally. ASG Studios is building a direct pipeline from creators to audiences worldwide.</div><span class="card-cta">Learn More →</span></div>
+      <div class="studio-card"><div class="card-num">06 / ESPORTS</div><span class="card-ico">🏆</span><div class="card-title">ESPORTS DIVISION</div><div class="card-body">Professional esports teams, tournaments, and broadcast ecosystems. Competing at the highest level — and building the infrastructure for the sport's future.</div><span class="card-cta">Learn More →</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ASG GROUP ════════════════════════════════════════ -->
+<section id="group" class="sec-pad">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="sec-tag">// Technology & Innovation</span>
+      <h2 class="sec-title" style="background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent">ASG GROUP</h2>
+      <p class="sec-sub">A futuristic conglomerate pushing the boundaries of science, technology, and human civilization itself.</p>
+      <div class="sec-line" style="background:var(--accent)"></div>
+    </div>
+    <div class="group-header-wrap reveal">
+      <div class="group-txt">
+        <h3>// REDEFINING WHAT IS POSSIBLE</h3>
+        <p>ASG Group operates at the frontier of human knowledge — from the quantum realm to the cosmic scale. We don't follow technology trends. We create them.</p>
+        <p>Our verticals span space exploration, artificial intelligence, advanced manufacturing, semiconductor design, and quantum computing — all unified under one relentless pursuit: the advancement of civilization.</p>
+        <button class="btn-cyan" style="margin-top:16px">Learn About ASG Group</button>
+      </div>
+      <div class="group-domains">
+        <div class="domain-item">Space Exploration</div>
+        <div class="domain-item">Spacecraft Manufacturing</div>
+        <div class="domain-item">Aircraft Manufacturing</div>
+        <div class="domain-item">Interstellar Travel</div>
+        <div class="domain-item">Artificial Intelligence</div>
+        <div class="domain-item">Fighter Jets</div>
+        <div class="domain-item">Propulsion Engines</div>
+        <div class="domain-item">Semiconductor Design</div>
+        <div class="domain-item">High Performance Chips</div>
+        <div class="domain-item">Satellite Manufacturing</div>
+        <div class="domain-item">Particle Accelerator</div>
+        <div class="domain-item">Quantum Computing</div>
+        <div class="domain-item">Automotive (EV)</div>
+        <div class="domain-item">Robotics & Automation</div>
+      </div>
+    </div>
+    <div class="group-cards reveal">
+      <div class="group-card"><span class="ico">🚀</span><div class="ttl">SPACE DIVISION</div><div class="dsc">Full-cycle space operations — from satellite deployment and space tourism to deep space exploration and eventually interstellar missions. ASG Space is humanity's next giant leap.</div></div>
+      <div class="group-card"><span class="ico">🧠</span><div class="ttl">AI RESEARCH LAB</div><div class="dsc">Advanced AI systems that go beyond language models — general intelligence, perception systems, autonomous agents, and neural architectures that redefine what machines can do.</div></div>
+      <div class="group-card"><span class="ico">⚛️</span><div class="ttl">QUANTUM COMPUTING</div><div class="dsc">Harnessing the power of quantum mechanics for computation problems that classical computers cannot solve. From cryptography to drug discovery to climate modeling.</div></div>
+      <div class="group-card"><span class="ico">💻</span><div class="ttl">SEMICONDUCTOR</div><div class="dsc">Designing next-generation processors and chips for AI acceleration, edge computing, and space-grade hardware. Custom silicon built for the most demanding workloads on Earth — and beyond.</div></div>
+      <div class="group-card"><span class="ico">✈️</span><div class="ttl">AEROSPACE</div><div class="dsc">Hypersonic aircraft, next-gen fighter jets, and sustainable aviation. ASG Aerospace designs vehicles that dominate every theater — from commercial aviation to tactical defense.</div></div>
+      <div class="group-card"><span class="ico">🔬</span><div class="ttl">PARTICLE PHYSICS</div><div class="dsc">Our particle accelerator research division investigates fundamental particles, energy fields, and the building blocks of matter — pushing the boundaries of physics itself.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ BLOG / CONTENT ═══════════════════════════════════ -->
+<section id="blog" class="sec-pad">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="sec-tag">// Knowledge Hub</span>
+      <h2 class="sec-title">CONTENT & DOCS</h2>
+      <p class="sec-sub">Blogs, technical documentation, code snippets, and insights from the mind of Shreyash Ghosh.</p>
+      <div class="sec-line"></div>
+    </div>
+    <div class="blog-filters reveal">
+      <button class="filter-btn active" data-filter="">All</button>
+      <button class="filter-btn" data-filter="blog">Blog</button>
+      <button class="filter-btn" data-filter="code">Code</button>
+      <button class="filter-btn" data-filter="documentation">Docs</button>
+      <button class="filter-btn" data-filter="news">News</button>
+    </div>
+    <div id="blog-grid" class="blog-grid reveal">
+      <div class="loading"><span></span><span></span><span></span></div>
+    </div>
+    <div class="blog-load reveal">
+      <button class="btn-chrome" id="blog-load-more" onclick="loadMorePosts()" style="display:none">Load More</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SHOP ════════════════════════════════════════════ -->
+<section id="shop" class="sec-pad">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="sec-tag">// Merchandise & Media</span>
+      <h2 class="sec-title">ASG SHOP</h2>
+      <p class="sec-sub">Official merchandise, books, and digital products from ASG Studios & ASG Group.</p>
+      <div class="sec-line"></div>
+    </div>
+    <div id="shop-grid" class="shop-grid reveal">
+      <div class="loading"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ DONATE ══════════════════════════════════════════ -->
+<section id="donate" class="sec-pad">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="sec-tag">// Support the Vision</span>
+      <h2 class="sec-title">MAKE A DONATION</h2>
+      <p class="sec-sub">Support ASG's mission to push the boundaries of creativity and technology. Every contribution fuels the future.</p>
+      <div class="sec-line"></div>
+    </div>
+    <div class="donate-wrap reveal">
+      <div class="donate-card">
+        <div style="margin-bottom:28px">
+          <label class="form-label">Select Amount</label>
+          <div class="amount-grid">
+            <button class="amount-btn" data-amount="100">₹100</button>
+            <button class="amount-btn active" data-amount="500">₹500</button>
+            <button class="amount-btn" data-amount="1000">₹1,000</button>
+            <button class="amount-btn" data-amount="5000">₹5,000</button>
+          </div>
+          <input class="form-field" type="number" id="custom-amount" placeholder="Or enter custom amount (₹)" min="1">
+        </div>
+        <div style="margin-bottom:20px">
+          <label class="form-label">Payment Method</label>
+          <div class="method-grid">
+            <button class="method-btn active" data-method="paypal">💳 PayPal</button>
+            <button class="method-btn" data-method="card">💳 Card (Razorpay)</button>
+            <button class="method-btn" data-method="upi">📱 UPI</button>
+            <button class="method-btn" data-method="bank_transfer">🏦 Bank Transfer</button>
+          </div>
+        </div>
+        <div class="input-row" style="margin-bottom:12px">
+          <div class="field-wrap">
+            <label class="form-label">Your Name (optional)</label>
+            <input class="form-field" type="text" id="donor-name" placeholder="Full Name" style="margin-bottom:0">
+          </div>
+          <div class="field-wrap">
+            <label class="form-label">Email (optional)</label>
+            <input class="form-field" type="email" id="donor-email" placeholder="your@email.com" style="margin-bottom:0">
+          </div>
+        </div>
+        <label class="form-label">Message (optional)</label>
+        <textarea class="form-field" id="donor-message" rows="3" placeholder="Leave a message..."></textarea>
+        <label class="form-check">
+          <input type="checkbox" id="donor-anon">
+          <span>Donate anonymously</span>
+        </label>
+        <button class="btn-gold" style="width:100%;margin-top:20px;justify-content:center;display:flex" onclick="submitDonation()">
+          Donate Now
+        </button>
+        <div id="donate-result" style="margin-top:16px;font-family:var(--font-m);font-size:11px;text-align:center;display:none"></div>
+        <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+          <p style="font-family:var(--font-m);font-size:9px;letter-spacing:2px;color:var(--text2);text-align:center">BANK DETAILS: Available after selecting Bank Transfer · UPI: Available after selecting UPI · All transactions are secure and encrypted.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ═════════════════════════════════════════ -->
+<section id="contact" class="sec-pad">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="sec-tag">// Get In Touch</span>
+      <h2 class="sec-title">CONTACT US</h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="contact-grid reveal">
+      <div class="contact-info">
+        <h3>LET'S BUILD THE FUTURE TOGETHER</h3>
+        <p>Whether you're a filmmaker, engineer, investor, or dreamer — ASG is always open to meaningful collaborations and conversations that push boundaries.</p>
+        <div class="contact-links">
+          <div class="contact-link"><span class="contact-link-ico">🌐</span> asgstudios.online</div>
+          <div class="contact-link"><span class="contact-link-ico">📧</span> contact@asgstudios.online</div>
+          <div class="contact-link"><span class="contact-link-ico">📍</span> India</div>
+        </div>
+      </div>
+      <form class="contact-form" id="contact-form" onsubmit="submitContact(event)">
+        <div class="input-row">
+          <div><label class="form-label">Name</label><input class="form-field" type="text" name="name" required placeholder="Your Name" style="margin-bottom:0"></div>
+          <div><label class="form-label">Email</label><input class="form-field" type="email" name="email" required placeholder="your@email.com" style="margin-bottom:0"></div>
+        </div>
+        <div><label class="form-label">Subject</label><input class="form-field" type="text" name="subject" placeholder="What's this about?" style="margin-bottom:0"></div>
+        <div><label class="form-label">Message</label><textarea class="form-field" name="message" rows="5" required placeholder="Tell us more..." style="margin-bottom:0"></textarea></div>
+        <input type="hidden" name="csrf_token" id="contact-csrf">
+        <button type="submit" class="btn-gold">Send Message</button>
+        <div id="contact-result" style="display:none;margin-top:12px;font-family:var(--font-m);font-size:11px"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo">ASG</div>
+        <p>ASG Studios & ASG Group — founded by Shreyash Ghosh. Forging the future through creativity, technology, and relentless innovation.</p>
+        <div class="newsletter-form">
+          <input type="email" class="newsletter-input" placeholder="your@email.com" id="newsletter-email">
+          <button class="newsletter-btn" onclick="subscribeNewsletter()">Join</button>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>ASG Studios</h4>
+        <a href="#studios">Cinematography</a>
+        <a href="#studios">Game Studios</a>
+        <a href="#studios">Music Production</a>
+        <a href="#studios">VFX & Animation</a>
+        <a href="#studios">Streaming</a>
+        <a href="#studios">Esports</a>
+      </div>
+      <div class="footer-col">
+        <h4>ASG Group</h4>
+        <a href="#group">Space Division</a>
+        <a href="#group">AI Research</a>
+        <a href="#group">Quantum Computing</a>
+        <a href="#group">Semiconductor</a>
+        <a href="#group">Aerospace</a>
+        <a href="#group">Automotive</a>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="#blog">Blog & Docs</a>
+        <a href="#shop">Shop</a>
+        <a href="#donate">Donate</a>
+        <a href="#contact">Contact</a>
+        <a href="/admin/" onclick="return checkAdminAccess()">Admin Panel</a>
+        <a href="/pages/privacy.php">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">
+      © <span id="copy-year"></span> <strong>ASG Studios & ASG Group</strong> — Founded by <strong>Shreyash Ghosh</strong>. All Rights Reserved.
+    </div>
+    <div class="footer-legal">
+      <a href="/pages/privacy.php">Privacy</a>
+      <a href="/pages/terms.php">Terms</a>
+      <a href="/pages/cookies.php">Cookies</a>
+    </div>
+  </div>
+  <div class="footer-trademark">
+    ASG™ · ASG Studios™ · ASG Group™ are trademarks of Shreyash Ghosh. All product names, logos, and brands are property of their respective owners. Unauthorized reproduction prohibited. ® Registered.
+  </div>
+</footer>
+
+<!-- ══ TOAST ═══════════════════════════════════════════ -->
+<div class="toast" id="toast"></div>
+
+<!-- ══ AUTH MODAL ══════════════════════════════════════ -->
+<div class="modal-overlay" id="auth-modal" onclick="if(event.target===this)closeModal('auth-modal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('auth-modal')">✕</button>
+    <h2>WELCOME BACK</h2>
+    <div class="oauth-btns">
+      <a class="oauth-btn" href="/api/auth.php?action=google">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Continue with Google
+      </a>
+      <a class="oauth-btn" href="/api/auth.php?action=github">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        Continue with GitHub
+      </a>
+    </div>
+    <div class="modal-divider">OR</div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="switchTab('login')">Login</button>
+      <button class="modal-tab" onclick="switchTab('register')">Register</button>
+    </div>
+    <div class="tab-pane active" id="tab-login">
+      <div class="field-wrap"><label class="form-label">Email</label><input class="form-field" type="email" id="login-email" placeholder="your@email.com" style="margin-bottom:0"></div>
+      <div class="field-wrap" style="margin-top:12px"><label class="form-label">Password</label><input class="form-field" type="password" id="login-pass" placeholder="••••••••" style="margin-bottom:0"></div>
+      <div id="login-error" class="error-msg" style="display:none"></div>
+      <button class="btn-gold" style="width:100%;margin-top:20px;justify-content:center;display:flex" onclick="submitLogin()">Login</button>
+    </div>
+    <div class="tab-pane" id="tab-register">
+      <div class="field-wrap"><label class="form-label">Full Name</label><input class="form-field" type="text" id="reg-name" placeholder="Your Name" style="margin-bottom:0"></div>
+      <div class="field-wrap" style="margin-top:12px"><label class="form-label">Email</label><input class="form-field" type="email" id="reg-email" placeholder="your@email.com" style="margin-bottom:0"></div>
+      <div class="field-wrap" style="margin-top:12px"><label class="form-label">Password</label><input class="form-field" type="password" id="reg-pass" placeholder="Min 8 chars, 1 uppercase, 1 number" style="margin-bottom:0"></div>
+      <div id="reg-error" class="error-msg" style="display:none"></div>
+      <button class="btn-gold" style="width:100%;margin-top:20px;justify-content:center;display:flex" onclick="submitRegister()">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ POST MODAL ═══════════════════════════════════════ -->
+<div class="modal-overlay" id="post-modal" onclick="if(event.target===this)closeModal('post-modal')">
+  <div class="modal" style="max-width:840px;max-height:90vh;overflow-y:auto">
+    <button class="modal-close" onclick="closeModal('post-modal')">✕</button>
+    <div id="post-modal-content"><div class="loading"><span></span><span></span><span></span></div></div>
+  </div>
+</div>
+
+<!-- ══ CART DRAWER ══════════════════════════════════════ -->
+<div id="cart-drawer">
+  <div class="cart-head">
+    <h3>CART</h3>
+    <button onclick="closeCart()" style="background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer">✕</button>
+  </div>
+  <div id="cart-items"></div>
+  <div class="cart-total" id="cart-total-section" style="display:none">
+    <div class="cart-total-row"><span class="lbl">Subtotal</span><span class="val" id="cart-subtotal">₹0</span></div>
+    <button class="btn-gold" style="width:100%;margin-top:16px;justify-content:center;display:flex" onclick="openModal('checkout-modal')">Checkout</button>
+  </div>
+</div>
+
+<!-- ══ CHECKOUT MODAL ═══════════════════════════════════ -->
+<div class="modal-overlay" id="checkout-modal" onclick="if(event.target===this)closeModal('checkout-modal')">
+  <div class="modal" style="max-width:520px">
+    <button class="modal-close" onclick="closeModal('checkout-modal')">✕</button>
+    <h2>CHECKOUT</h2>
+    <div class="field-wrap"><label class="form-label">Full Name</label><input class="form-field" id="co-name" type="text" placeholder="Name" style="margin-bottom:0"></div>
+    <div class="field-wrap" style="margin-top:12px"><label class="form-label">Email</label><input class="form-field" id="co-email" type="email" placeholder="Email" style="margin-bottom:0"></div>
+    <div class="field-wrap" style="margin-top:12px"><label class="form-label">Shipping Address</label><textarea class="form-field" id="co-address" rows="3" placeholder="Full shipping address" style="margin-bottom:0"></textarea></div>
+    <div style="margin-top:20px"><label class="form-label">Payment Method</label>
+      <div class="method-grid" style="margin-top:8px">
+        <button class="method-btn active" data-co-method="card">💳 Card</button>
+        <button class="method-btn" data-co-method="paypal">💳 PayPal</button>
+        <button class="method-btn" data-co-method="upi">📱 UPI</button>
+        <button class="method-btn" data-co-method="bank_transfer">🏦 Bank</button>
+      </div>
+    </div>
+    <div id="co-error" class="error-msg" style="display:none"></div>
+    <button class="btn-gold" style="width:100%;margin-top:24px;justify-content:center;display:flex" onclick="submitCheckout()">Place Order</button>
+  </div>
+</div>
+
+<!-- ══ RAZORPAY + SCRIPTS ═══════════════════════════════ -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+// ══════════════════════════════════════════════
+// CURSOR
+// ══════════════════════════════════════════════
+const dot  = document.getElementById('cur-dot');
+const ring = document.getElementById('cur-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx+'px'; dot.style.top = my+'px'; });
+(function animate() {
+  rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+  ring.style.left = rx+'px'; ring.style.top = ry+'px';
+  requestAnimationFrame(animate);
+})();
+document.querySelectorAll('a,button,[onclick]').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+});
+document.addEventListener('mousedown', () => document.body.classList.add('cursor-active'));
+document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-active'));
+
+// ══════════════════════════════════════════════
+// PARTICLES
+// ══════════════════════════════════════════════
+(function() {
+  const c = document.getElementById('pcanvas');
+  const ctx = c.getContext('2d');
+  let W, H, pts;
+  function init() {
+    W = c.width = window.innerWidth;
+    H = c.height = window.innerHeight;
+    pts = Array.from({length: 80}, () => ({
+      x: Math.random()*W, y: Math.random()*H,
+      vx: (Math.random()-0.5)*0.4, vy: (Math.random()-0.5)*0.4,
+      r: Math.random()*1.5+0.3,
+      a: Math.random()
+    }));
+  }
+  function frame() {
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(201,168,76,${p.a*0.5})`;
+      ctx.fill();
+    });
+    pts.forEach((a, i) => pts.slice(i+1).forEach(b => {
+      const dx = a.x-b.x, dy = a.y-b.y, d = Math.sqrt(dx*dx+dy*dy);
+      if (d < 120) {
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+        ctx.strokeStyle = `rgba(201,168,76,${(1-d/120)*0.12})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }));
+    requestAnimationFrame(frame);
+  }
+  window.addEventListener('resize', init);
+  init(); frame();
+})();
+
+// ══════════════════════════════════════════════
+// SCROLL EFFECTS
+// ══════════════════════════════════════════════
+const nav = document.getElementById('main-nav');
+const scrollBar = document.getElementById('scroll-bar');
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  scrollBar.style.width = pct + '%';
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// Reveal on scroll
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ══════════════════════════════════════════════
+// NAV UTILS
+// ══════════════════════════════════════════════
+function scrollTo(sel) { document.querySelector(sel)?.scrollIntoView({behavior:'smooth'}); }
+function openDrawer() { document.getElementById('nav-drawer').classList.add('open'); document.getElementById('drawer-overlay').classList.add('show'); }
+function closeDrawer() { document.getElementById('nav-drawer').classList.remove('open'); document.getElementById('drawer-overlay').classList.remove('show'); }
+
+// ══════════════════════════════════════════════
+// MODAL SYSTEM
+// ══════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+
+function switchTab(tab) {
+  document.querySelectorAll('.modal-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-register').classList.toggle('active', tab==='register');
+}
+
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// ══════════════════════════════════════════════
+// CSRF
+// ══════════════════════════════════════════════
+let csrfToken = '';
+async function fetchCSRF() {
+  try {
+    const r = await fetch('/api/auth.php?action=me');
+    const d = await r.json();
+    // CSRF stored in session; we pass it via hidden field on forms
+    // For AJAX we use X-CSRF-Token header
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════
+async function submitLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+  if (!email || !pass) { errEl.textContent='Please fill all fields'; errEl.style.display='block'; return; }
+  const fd = new FormData();
+  fd.append('email', email); fd.append('password', pass); fd.append('csrf_token', csrfToken);
+  try {
+    const r = await fetch('/api/auth.php?action=login', {method:'POST', body:fd});
+    const d = await r.json();
+    if (d.success) { showToast('Login successful!'); closeModal('auth-modal'); window.location.href = d.redirect || '/'; }
+    else { errEl.textContent = d.error; errEl.style.display='block'; }
+  } catch(e) { errEl.textContent='Network error. Please try again.'; errEl.style.display='block'; }
+}
+
+async function submitRegister() {
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-pass').value;
+  const errEl = document.getElementById('reg-error');
+  errEl.style.display = 'none';
+  if (!name||!email||!pass) { errEl.textContent='All fields required'; errEl.style.display='block'; return; }
+  const fd = new FormData();
+  fd.append('name',name); fd.append('email',email); fd.append('password',pass); fd.append('csrf_token',csrfToken);
+  try {
+    const r = await fetch('/api/auth.php?action=register', {method:'POST', body:fd});
+    const d = await r.json();
+    if (d.success) { showToast('Account created! Check your email.'); switchTab('login'); }
+    else { errEl.textContent = d.error; errEl.style.display='block'; }
+  } catch(e) { errEl.textContent='Network error.'; errEl.style.display='block'; }
+}
+
+function checkAdminAccess() {
+  const user = window._asgUser;
+  if (!user || !['admin','superadmin'].includes(user.role)) { openModal('auth-modal'); return false; }
+  return true;
+}
+
+// ══════════════════════════════════════════════
+// BLOG
+// ══════════════════════════════════════════════
+let blogPage = 1, blogFilter = '', blogTotal = 0;
+
+async function loadPosts(reset=false) {
+  if (reset) { blogPage=1; document.getElementById('blog-grid').innerHTML='<div class="loading"><span></span><span></span><span></span></div>'; }
+  const params = new URLSearchParams({page:blogPage, limit:9, ...(blogFilter?{type:blogFilter}:{})});
+  try {
+    const r = await fetch('/api/posts.php?action=list&'+params);
+    const d = await r.json();
+    if (!d.success) { document.getElementById('blog-grid').innerHTML='<div class="blog-empty">// BLOG COMING SOON //</div>'; return; }
+    blogTotal = d.total;
+    const grid = document.getElementById('blog-grid');
+    if (reset) grid.innerHTML='';
+    if (!d.posts.length && reset) { grid.innerHTML='<div class="blog-empty">// NO POSTS FOUND //</div>'; return; }
+    d.posts.forEach(p => { grid.insertAdjacentHTML('beforeend', renderBlogCard(p)); });
+    document.getElementById('blog-load-more').style.display = (blogPage*9 < blogTotal) ? 'inline-block' : 'none';
+  } catch(e) {
+    document.getElementById('blog-grid').innerHTML='<div class="blog-empty">// BLOG COMING SOON //</div>';
+  }
+}
+
+function renderBlogCard(p) {
+  const date = p.published_at ? new Date(p.published_at).toLocaleDateString('en-IN',{year:'numeric',month:'short',day:'numeric'}) : '';
+  const ico  = {blog:'📝',code:'💻',documentation:'📖',news:'📡'}[p.type]||'📝';
+  const img  = p.cover_image ? `<img class="blog-img" src="${p.cover_image}" alt="${p.title}" loading="lazy">` : ico;
+  return `<div class="blog-card" onclick="openPost('${p.slug}')">
+    <div class="blog-thumb">${img}</div>
+    <div class="blog-body">
+      <div class="blog-cat">${p.type.toUpperCase()}</div>
+      <div class="blog-title">${p.title}</div>
+      <div class="blog-exc">${p.excerpt||''}</div>
+      <div class="blog-meta">
+        <div class="author">${p.author_name}</div>
+        <div class="date">${date}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function openPost(slug) {
+  openModal('post-modal');
+  document.getElementById('post-modal-content').innerHTML='<div class="loading"><span></span><span></span><span></span></div>';
+  try {
+    const r = await fetch('/api/posts.php?action=get&slug='+encodeURIComponent(slug));
+    const d = await r.json();
+    if (!d.success) { document.getElementById('post-modal-content').innerHTML='<p style="color:var(--red)">Post not found</p>'; return; }
+    const p = d.post;
+    const cover = p.cover_image ? `<img class="post-modal-cover" src="${p.cover_image}" alt="${p.title}">` : '';
+    document.getElementById('post-modal-content').innerHTML=`
+      ${cover}
+      <div class="post-modal-cat">${p.type.toUpperCase()}</div>
+      <div class="post-modal-title">${p.title}</div>
+      <div class="post-modal-body">${p.content}</div>`;
+  } catch(e) {
+    document.getElementById('post-modal-content').innerHTML='<p style="color:var(--red)">Failed to load post</p>';
+  }
+}
+
+function loadMorePosts() { blogPage++; loadPosts(); }
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    blogFilter = btn.dataset.filter;
+    loadPosts(true);
+  });
+});
+
+// ══════════════════════════════════════════════
+// SHOP
+// ══════════════════════════════════════════════
+let cart = JSON.parse(localStorage.getItem('asg_cart')||'[]');
+let csrfForForms = '';
+
+async function loadProducts() {
+  try {
+    const r = await fetch('/api/shop.php?action=list');
+    const d = await r.json();
+    const grid = document.getElementById('shop-grid');
+    if (!d.success || !d.products.length) { grid.innerHTML='<div class="blog-empty" style="grid-column:1/-1">// SHOP COMING SOON //</div>'; return; }
+    grid.innerHTML = d.products.map(renderProduct).join('');
+  } catch(e) { document.getElementById('shop-grid').innerHTML='<div class="blog-empty" style="grid-column:1/-1">// SHOP COMING SOON //</div>'; }
+}
+
+function renderProduct(p) {
+  const ico = {merchandise:'👕',book:'📚',digital:'💾',other:'📦'}[p.category]||'📦';
+  const img = p.cover_image ? `<img src="${p.cover_image}" alt="${p.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover">` : ico;
+  return `<div class="prod-card">
+    <div class="prod-thumb">${img}</div>
+    <div class="prod-body">
+      <div class="prod-cat">${p.category.toUpperCase()}</div>
+      <div class="prod-name">${p.name}</div>
+      <div class="prod-desc">${(p.description||'').slice(0,80)}${p.description?.length>80?'...':''}</div>
+      <div class="prod-foot">
+        <div class="prod-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
+        <button class="prod-btn" onclick="addToCart(${p.id},'${p.name.replace(/'/g,"\\'")}',${p.price},'${p.cover_image||''}')">Add to Cart</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function addToCart(id, name, price, img) {
+  const ex = cart.find(c => c.id===id);
+  if (ex) ex.qty++;
+  else cart.push({id, name, price, img, qty:1});
+  saveCart(); renderCart(); openCart();
+  showToast(name + ' added to cart!');
+}
+
+function saveCart() { localStorage.setItem('asg_cart', JSON.stringify(cart)); updateCartBadge(); }
+function updateCartBadge() {
+  const total = cart.reduce((s,c)=>s+c.qty,0);
+  const badge = document.getElementById('cart-count');
+  badge.textContent = total;
+  badge.style.display = total ? 'flex' : 'none';
+}
+
+function renderCart() {
+  const el = document.getElementById('cart-items');
+  const ts = document.getElementById('cart-total-section');
+  if (!cart.length) { el.innerHTML='<div class="cart-empty">// CART IS EMPTY //</div>'; ts.style.display='none'; return; }
+  el.innerHTML = cart.map((c,i) => `
+    <div class="cart-item">
+      <div class="cart-item-img">${c.img?`<img src="${c.img}" alt="">`:c.name[0]}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${c.name}</div>
+        <div class="cart-item-price">₹${Number(c.price).toLocaleString('en-IN')}</div>
+        <div class="cart-item-qty">
+          <button class="qty-btn" onclick="changeQty(${i},-1)">−</button>
+          <span class="qty-num">${c.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${i},1)">+</button>
+        </div>
+      </div>
+      <button class="cart-remove" onclick="removeFromCart(${i})">✕</button>
+    </div>`).join('');
+  const subtotal = cart.reduce((s,c)=>s+(c.price*c.qty),0);
+  document.getElementById('cart-subtotal').textContent = '₹' + subtotal.toLocaleString('en-IN');
+  ts.style.display = 'block';
+}
+
+function changeQty(i, d) { cart[i].qty = Math.max(1, cart[i].qty+d); saveCart(); renderCart(); }
+function removeFromCart(i) { cart.splice(i,1); saveCart(); renderCart(); }
+function openCart()  { document.getElementById('cart-drawer').classList.add('open'); renderCart(); }
+function closeCart() { document.getElementById('cart-drawer').classList.remove('open'); }
+
+// ══════════════════════════════════════════════
+// CHECKOUT
+// ══════════════════════════════════════════════
+let coMethod = 'card';
+document.querySelectorAll('[data-co-method]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-co-method]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    coMethod = btn.dataset.coMethod;
+  });
+});
+
+async function submitCheckout() {
+  const name    = document.getElementById('co-name').value.trim();
+  const email   = document.getElementById('co-email').value.trim();
+  const address = document.getElementById('co-address').value.trim();
+  const errEl   = document.getElementById('co-error');
+  errEl.style.display='none';
+  if (!name||!email||!address) { errEl.textContent='Please fill all fields'; errEl.style.display='block'; return; }
+  if (!cart.length) { errEl.textContent='Cart is empty'; errEl.style.display='block'; return; }
+
+  const fd = new FormData();
+  fd.append('items', JSON.stringify(cart.map(c=>({product_id:c.id,qty:c.qty}))));
+  fd.append('method', coMethod);
+  fd.append('name', name); fd.append('email', email); fd.append('address', address);
+  fd.append('csrf_token', csrfToken);
+
+  try {
+    const r = await fetch('/api/shop.php?action=checkout', {method:'POST', body:fd});
+    const d = await r.json();
+    if (!d.success) { errEl.textContent=d.error; errEl.style.display='block'; return; }
+
+    if (coMethod==='card' && d.rzp_order) {
+      const rzp = new Razorpay({
+        key: d.razorpay_key, amount: d.rzp_order.amount, currency: d.rzp_order.currency,
+        name: 'ASG Studios', order_id: d.rzp_order.id,
+        handler: async function(resp) {
+          const vfd = new FormData();
+          vfd.append('order_id', d.order_id);
+          vfd.append('razorpay_payment_id', resp.razorpay_payment_id);
+          vfd.append('razorpay_order_id', resp.razorpay_order_id);
+          vfd.append('razorpay_signature', resp.razorpay_signature);
+          vfd.append('csrf_token', csrfToken);
+          await fetch('/api/shop.php?action=verify_payment', {method:'POST', body:vfd});
+          cart=[]; saveCart(); closeModal('checkout-modal'); closeCart();
+          showToast('Order placed successfully! Thank you.');
+        },
+        prefill: {name, email}, theme:{color:'#c9a84c'}
+      });
+      rzp.open();
+    } else {
+      cart=[]; saveCart(); closeModal('checkout-modal'); closeCart();
+      showToast('Order placed! Payment instructions sent to your email.');
+    }
+  } catch(e) { errEl.textContent='Error placing order'; errEl.style.display='block'; }
+}
+
+// ══════════════════════════════════════════════
+// DONATIONS
+// ══════════════════════════════════════════════
+let donateAmount = 500, donateMethod = 'paypal';
+
+document.querySelectorAll('.amount-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.amount-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    donateAmount = parseInt(btn.dataset.amount);
+    document.getElementById('custom-amount').value = '';
+  });
+});
+document.getElementById('custom-amount').addEventListener('input', function() {
+  if (this.value) { document.querySelectorAll('.amount-btn').forEach(b=>b.classList.remove('active')); donateAmount = parseInt(this.value); }
+});
+document.querySelectorAll('.method-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.method-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    donateMethod = btn.dataset.method;
+  });
+});
+
+async function submitDonation() {
+  const resultEl = document.getElementById('donate-result');
+  resultEl.style.display='none';
+  const fd = new FormData();
+  fd.append('amount', donateAmount);
+  fd.append('currency', 'INR');
+  fd.append('method', donateMethod);
+  fd.append('name', document.getElementById('donor-name').value);
+  fd.append('email', document.getElementById('donor-email').value);
+  fd.append('message', document.getElementById('donor-message').value);
+  if (document.getElementById('donor-anon').checked) fd.append('anonymous','1');
+  fd.append('csrf_token', csrfToken);
+  try {
+    const r = await fetch('/api/donations.php?action=create', {method:'POST',body:fd});
+    const d = await r.json();
+    if (!d.success) { resultEl.textContent='Error: '+d.error; resultEl.style.color='var(--red)'; resultEl.style.display='block'; return; }
+    if (donateMethod==='card' && d.order?.id) {
+      const rzp = new Razorpay({
+        key:d.razorpay_key, amount:d.order.amount, currency:d.order.currency,
+        name:'ASG — Donation', order_id:d.order.id,
+        handler: async function(resp) {
+          const vfd=new FormData(); vfd.append('donation_id',d.donation_id);
+          vfd.append('razorpay_payment_id',resp.razorpay_payment_id);
+          vfd.append('razorpay_order_id',resp.razorpay_order_id);
+          vfd.append('razorpay_signature',resp.razorpay_signature);
+          vfd.append('csrf_token',csrfToken);
+          await fetch('/api/donations.php?action=verify_razorpay',{method:'POST',body:vfd});
+          showToast('Thank you for your generous donation! 🙏');
+        },
+        theme:{color:'#c9a84c'}
+      });
+      rzp.open();
+    } else if (donateMethod==='upi') {
+      resultEl.textContent=`UPI ID: ${d.upi_id} — Amount: ₹${donateAmount}. Please complete the transfer and screenshot it for your records.`;
+      resultEl.style.color='var(--gold)'; resultEl.style.display='block';
+    } else if (donateMethod==='bank_transfer') {
+      resultEl.innerHTML=`Bank Details:<br>${(d.bank_details||'').replace(/\n/g,'<br>')}`;
+      resultEl.style.color='var(--gold)'; resultEl.style.display='block';
+    } else if (donateMethod==='paypal') {
+      resultEl.textContent=`PayPal: ${d.paypal_email} — Amount: ₹${donateAmount}`;
+      resultEl.style.color='var(--gold)'; resultEl.style.display='block';
+      showToast('Please complete payment on PayPal and mark as "Goods and Services"');
+    }
+  } catch(e) { resultEl.textContent='Network error'; resultEl.style.color='var(--red)'; resultEl.style.display='block'; }
+}
+
+// ══════════════════════════════════════════════
+// CONTACT
+// ══════════════════════════════════════════════
+async function submitContact(e) {
+  e.preventDefault();
+  const form = document.getElementById('contact-form');
+  const fd   = new FormData(form);
+  fd.set('csrf_token', csrfToken);
+  try {
+    const r = await fetch('/api/contact.php', {method:'POST', body:fd});
+    const d = await r.json();
+    const res = document.getElementById('contact-result');
+    if (d.success) { showToast('Message sent! We\'ll be in touch.'); form.reset(); }
+    else { res.textContent='Error: '+(d.error||'Failed'); res.style.color='var(--red)'; res.style.display='block'; }
+  } catch(e) { showToast('Network error. Please email us directly.','error'); }
+}
+
+// ══════════════════════════════════════════════
+// NEWSLETTER
+// ══════════════════════════════════════════════
+async function subscribeNewsletter() {
+  const email = document.getElementById('newsletter-email').value.trim();
+  if (!email) { showToast('Please enter your email','error'); return; }
+  const fd = new FormData(); fd.append('email',email); fd.append('csrf_token',csrfToken);
+  try {
+    const r = await fetch('/api/newsletter.php', {method:'POST',body:fd});
+    const d = await r.json();
+    if (d.success) { showToast('Subscribed! Welcome to ASG.'); document.getElementById('newsletter-email').value=''; }
+    else showToast(d.error||'Error','error');
+  } catch(e) { showToast('Network error','error'); }
+}
+
+// ══════════════════════════════════════════════
+// FOOTER COPYRIGHT YEAR
+// ══════════════════════════════════════════════
+document.getElementById('copy-year').textContent = new Date().getFullYear();
+
+// ══════════════════════════════════════════════
+// CURRENT USER CHECK
+// ══════════════════════════════════════════════
+(async function checkUser() {
+  try {
+    const r = await fetch('/api/auth.php?action=me');
+    const d = await r.json();
+    if (d.success && d.user) {
+      window._asgUser = d.user;
+      document.getElementById('nav-user-area').innerHTML = `
+        <span style="font-family:var(--font-m);font-size:10px;color:var(--gold);letter-spacing:2px">${d.user.name}</span>
+        <button class="nav-btn-login" onclick="logout()">Logout</button>`;
+    }
+  } catch(e) {}
+})();
+
+async function logout() {
+  await fetch('/api/auth.php?action=logout', {method:'POST'});
+  window._asgUser = null;
+  window.location.reload();
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+updateCartBadge();
+loadPosts(true);
+loadProducts();
+</script>
+</body>
+</html>
